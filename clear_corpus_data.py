@@ -37,12 +37,17 @@ def juamnpp2sentences(filename='output.txt'):
 	sentences = text.split('EOS\n/')
 	# 除去句子里的空格造成的双斜杠
 	jp = [i.replace('//', '/') for i in sentences]
-	# 处理工作完成，将已经处理过的日语和英语对译句放入csv
-	df2 = pd.DataFrame()
-	df2['jp'] = jp 
+	print('已完成日语分词')
+	return jp
+	# # 处理工作完成，将已经处理过的日语和英语对译句放入csv
+	# df2 = pd.DataFrame()
+	# df2['jp'] = jp 
 
-	print('已完成日语分词,有返回值 df.jp')
-	return df2.jp
+	# print('已完成日语分词,有返回值 df.jp')
+	# return df2.jp
+
+
+
 
 
 def tokenize_and_lemmatize(en=en):
@@ -57,13 +62,19 @@ def tokenize_and_lemmatize(en=en):
 			tokenized_and_lemmatized_sentences[i][j] = wnl.lemmatize(tokenized_and_lemmatized_sentences[i][j])
 
 	en_word_list = [word for sen in tokenized_and_lemmatized_sentences for word in sen]
+	print('已完成英语lemmatize')
 	return tokenized_and_lemmatized_sentences, en_word_list
 
 
-en = jp_extract(filename)
-jp_lemmatize()
-lemmatized_jp_sentences = juamnpp2sentences()
-lemmatized_en_sentences,en_word_list = tokenize_and_lemmatize()
+def run(filename):
+	en = jp_extract(filename) #en只是临时使用的变量
+	jp_lemmatize()
+	lemmatized_jp_sentences = juamnpp2sentences() # 返回的是sentence lists
+	jp_word_list = [word for s in lemmatized_jp_sentences for word in s.split('/')] # jp词表
+	lemmatized_en_sentences,en_word_list = tokenize_and_lemmatize() # en的sentence lists和en词表
+	print('返回四个值：lemmatized_en_sentences, lemmatized_jp_sentences, en_word_list, jp_word_list')
+	return lemmatized_en_sentences, lemmatized_jp_sentences, en_word_list, jp_word_list
+
 
 
 
