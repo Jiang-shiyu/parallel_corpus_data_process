@@ -1,4 +1,3 @@
-import time
 import numpy as np
 import jieba
 import pandas as pd
@@ -26,37 +25,29 @@ def pre_handle(inputfilename):
 
 	df.en=tokenized_sentences
 
+	cn_words_s = pd.Series([w for s in df.cn for w in s])
+	en_words_s = pd.Series([w for s in df.en for w in s])
 
-	# 计算词频
-	cn_word_list = [w for s in df.cn for w in s]
-	en_word_list = [w for s in df.en for w in s]
-
-	cn_words_freq = pd.Series(cn_word_list).value_counts()
-	en_words_freq = pd.Series(en_word_list).value_counts()
-
+	cn_words_s, en_words_s = clear_words_list(cn_words_s, en_words_s)
+	cn_words_freq = cn_words_s.value_counts()
+	en_words_freq = en_words_s.value_counts()
 	# 准备好四个待计算共现词频的变量
 	en_sentences_list = df.en.to_list() 
 	cn_sentences_list = df.cn.to_list()
 	return en_words_freq, cn_words_freq, en_sentences_list, cn_sentences_list
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def clear_words_list(cn_words_s, en_words_s):
+	#设置需要过滤的词
+	cn_stopwords = '[0-9。，、！？ \.\(\)]'
+	en_stopwords = '[0-9\.\,\?\(\)]'
+	#过滤中文，得到干净的中文词表
+	cn_replace_stopwords = cn_words_s.str.replace(cn_stopwords, '',regex=True)
+	cn_blanc_index = cn_replace_stopwords[cn_replace_stopwords==''].index
+	cn_words_s = cn_replace_stopwords.drop(cn_blanc_index)
+	#cn_clear_words_list = cn_words_s.to_list()
+	#过滤英文，得到干净的英文词表
+	en_replace_stopwords = en_words_s.str.replace(en_stopwords, '', regex=True)
+	en_blanc_index = en_replace_stopwords[en_replace_stopwords==''].index
+	en_words_s = en_replace_stopwords.drop(en_blanc_index)
+	#en_clear_words_list = en_words_s.to_list()
+	return cn_words_s, en_words_s
