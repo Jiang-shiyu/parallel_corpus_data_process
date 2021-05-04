@@ -2,11 +2,10 @@ import time
 import numpy as np
 import jieba
 import pandas as pd
-import nltk
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-def pre_handle(inputfilename, outputfilename):
+def pre_handle(inputfilename):
 	with open(inputfilename, 'r') as f:
 	    f_list = [line for line in f]
 
@@ -27,7 +26,6 @@ def pre_handle(inputfilename, outputfilename):
 
 	df.en=tokenized_sentences
 
-	df.to_csv(outputfilename)
 
 	# 计算词频
 	cn_word_list = [w for s in df.cn for w in s]
@@ -37,9 +35,9 @@ def pre_handle(inputfilename, outputfilename):
 	en_words_freq = pd.Series(en_word_list).value_counts()
 
 	# 准备好四个待计算共现词频的变量
-	en_list = df.en.to_list() 
-	cn_list = df.cn.to_list()
-	return en_words_freq, cn_words_freq, en_list, cn_list
+	en_sentences_list = df.en.to_list() 
+	cn_sentences_list = df.cn.to_list()
+	return en_words_freq, cn_words_freq, en_sentences_list, cn_sentences_list
 
 
 
